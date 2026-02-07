@@ -6,7 +6,8 @@ import {
     SafeAreaView,
     TouchableOpacity,
     ScrollView,
-    Dimensions
+    Dimensions,
+    Image
 } from 'react-native';
 import { theme } from '../theme';
 import { ChevronLeft, Heart, Star, Clock, Flame, Minus, Plus } from 'lucide-react-native';
@@ -48,7 +49,11 @@ export default function FoodDetailsScreen({ route, navigation }) {
                         entering={ZoomIn.delay(300).duration(800)}
                         style={styles.imageContainer}
                     >
-                        <Text style={styles.foodEmoji}>{item.image}</Text>
+                        <Image
+                            source={{ uri: item.image }}
+                            style={styles.detailsImage}
+                            resizeMode="cover"
+                        />
                     </Animated.View>
                 </View>
 
@@ -171,8 +176,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    foodEmoji: {
-        fontSize: 120,
+    detailsImage: {
+        width: 250,
+        height: 250,
+        borderRadius: 125,
+        borderWidth: 2,
+        borderColor: '#FFF',
     },
     content: {
         padding: 24,

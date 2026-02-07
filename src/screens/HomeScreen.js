@@ -9,8 +9,10 @@ import {
     Image,
     SafeAreaView,
     FlatList,
-    Dimensions
+    Dimensions,
+    ActivityIndicator
 } from 'react-native';
+import * as Location from 'expo-location';
 import { theme } from '../theme';
 import { Search, MapPin, Bell, SlidersHorizontal, Star, Plus } from 'lucide-react-native';
 import Animated, { FadeInRight, FadeInUp } from 'react-native-reanimated';
@@ -18,45 +20,92 @@ import Animated, { FadeInRight, FadeInUp } from 'react-native-reanimated';
 const { width } = Dimensions.get('window');
 
 const CATEGORIES = [
-    { id: 1, name: 'Burger', icon: '🍔' },
-    { id: 2, name: 'Pizza', icon: '🍕' },
-    { id: 3, name: 'Sushi', icon: '🍣' },
-    { id: 4, name: 'Noodles', icon: '🍜' },
-    { id: 5, name: 'Dessert', icon: '🍰' },
+    { id: 1, name: 'Burger', image: 'https://cdn-icons-png.flaticon.com/512/3075/3075977.png' },
+    { id: 2, name: 'Pizza', image: 'https://cdn-icons-png.flaticon.com/512/1404/1404945.png' },
+    { id: 3, name: 'Sushi', image: 'https://cdn-icons-png.flaticon.com/512/2252/2252075.png' },
+    { id: 4, name: 'Noodles', image: 'https://cdn-icons-png.flaticon.com/512/3041/3041130.png' },
+    { id: 5, name: 'Dessert', image: 'https://cdn-icons-png.flaticon.com/512/4459/4459972.png' },
+];
+
+const RESTAURANTS = [
+    {
+        id: 1,
+        name: 'Ambur Star Biryani',
+        address: 'Anna Nagar, Chennai',
+        distance: '2.5 km',
+        rating: 4.8,
+        image: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?q=80&w=800&auto=format&fit=crop',
+    },
+    {
+        id: 2,
+        name: 'Barbeque Nation',
+        address: 'T. Nagar, Chennai',
+        distance: '4.0 km',
+        rating: 4.6,
+        image: 'https://images.unsplash.com/photo-1544025162-d76690b67f11?q=80&w=800&auto=format&fit=crop',
+    },
+    {
+        id: 3,
+        name: 'Saravana Bhavan',
+        address: 'Vadapalani, Chennai',
+        distance: '1.2 km',
+        rating: 4.5,
+        image: 'https://images.unsplash.com/photo-1593560708920-63984dc77432?q=80&w=800&auto=format&fit=crop',
+    }
 ];
 
 const POPULAR_FOOD = [
     {
         id: 1,
-        name: 'Classic Beef Burger',
-        restaurant: 'Burger King',
-        price: '$12.99',
-        rating: 4.8,
-        image: '🍔',
+        name: 'Chicken Biryani',
+        restaurant: 'Ambur Star Biryani',
+        price: '$8.50',
+        rating: 4.9,
+        image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=800&auto=format&fit=crop',
         bgColor: '#FFF3E0'
     },
     {
         id: 2,
-        name: 'Pepperoni Pizza',
-        restaurant: 'Pizza Hut',
-        price: '$15.50',
-        rating: 4.5,
-        image: '🍕',
+        name: 'Grilled Prawns',
+        restaurant: 'Barbeque Nation',
+        price: '$12.00',
+        rating: 4.7,
+        image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=800&auto=format&fit=crop', // Keeping pizza image for variety or switch? Let's use a grill image.
         bgColor: '#FCE4EC'
     },
     {
         id: 3,
-        name: 'Salmon Sushi Roll',
-        restaurant: 'Sushi Den',
-        price: '$22.00',
-        rating: 4.9,
-        image: '🍣',
+        name: 'Mini Tiffin',
+        restaurant: 'Saravana Bhavan',
+        price: '$5.00',
+        rating: 4.5,
+        image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=800&auto=format&fit=crop', // Pizza image replace
         bgColor: '#E8F5E9'
     }
 ];
 
 export default function HomeScreen({ navigation }) {
     const [activeCategory, setActiveCategory] = useState(1);
+    const [displayAddress, setDisplayAddress] = useState('Locating...');
+
+    React.useEffect(() => {
+        (async () => {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                setDisplayAddress('Permission Denied');
+                return;
+            }
+
+            let location = await Location.getCurrentPositionAsync({});
+            let address = await Location.reverseGeocodeAsync(location.coords);
+            console.log(address);
+
+            if (address.length > 0) {
+                const currentAddress = address[0];
+                setDisplayAddress(`${currentAddress.city || currentAddress.district || 'Unknown'}, ${currentAddress.region || currentAddress.country || ''}`);
+            }
+        })();
+    }, []);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -67,7 +116,7 @@ export default function HomeScreen({ navigation }) {
                     <View>
                         <View style={styles.locationContainer}>
                             <MapPin size={16} color={theme.colors.primary} />
-                            <Text style={styles.locationText}>New York, USA</Text>
+                            <Text style={styles.locationText}>{displayAddress}</Text>
                         </View>
                         <Text style={styles.greetingText}>Hello, <Text style={styles.userName}>Karthik!</Text></Text>
                     </View>
@@ -90,7 +139,10 @@ export default function HomeScreen({ navigation }) {
                             <Text style={styles.promoBtnText}>Order Now</Text>
                         </TouchableOpacity>
                     </View>
-                    <Text style={styles.promoEmoji}>🥘</Text>
+                    <Image
+                        source={{ uri: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=400&auto=format&fit=crop' }}
+                        style={styles.promoImage}
+                    />
                 </Animated.View>
 
                 {/* Search Bar */}
@@ -127,13 +179,46 @@ export default function HomeScreen({ navigation }) {
                                     activeCategory === category.id && styles.activeCategoryCard
                                 ]}
                             >
-                                <Text style={styles.categoryIcon}>{category.icon}</Text>
+                                <Image source={{ uri: category.image }} style={styles.categoryImage} />
                                 <Text style={[
                                     styles.categoryName,
                                     activeCategory === category.id && styles.activeCategoryName
                                 ]}>
                                     {category.name}
                                 </Text>
+                            </TouchableOpacity>
+                        </Animated.View>
+                    ))}
+                </ScrollView>
+
+                {/* Featured Restaurants */}
+                <View style={styles.sectionHeader}>
+                    <Text style={styles.sectionTitle}>Featured Restaurants</Text>
+                    <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
+                </View>
+
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.restaurantList}>
+                    {RESTAURANTS.map((item, index) => (
+                        <Animated.View
+                            key={item.id}
+                            entering={FadeInRight.delay(index * 200).duration(600)}
+                        >
+                            <TouchableOpacity style={styles.restaurantCard} activeOpacity={0.8}>
+                                <Image source={{ uri: item.image }} style={styles.restaurantImage} />
+                                <View style={styles.restaurantInfo}>
+                                    <Text style={styles.restaurantName}>{item.name}</Text>
+                                    <View style={styles.row}>
+                                        <MapPin size={12} color={theme.colors.textSecondary} />
+                                        <Text style={styles.restaurantAddress}>{item.address}</Text>
+                                    </View>
+                                    <View style={styles.row}>
+                                        <Text style={styles.distanceBadge}>{item.distance}</Text>
+                                        <View style={styles.ratingBadgeSm}>
+                                            <Star size={10} fill="#FFD700" color="#FFD700" />
+                                            <Text style={styles.ratingTextSm}>{item.rating}</Text>
+                                        </View>
+                                    </View>
+                                </View>
                             </TouchableOpacity>
                         </Animated.View>
                     ))}
@@ -156,7 +241,7 @@ export default function HomeScreen({ navigation }) {
                                 onPress={() => navigation.navigate('FoodDetails', { item })}
                             >
                                 <View style={[styles.foodImageContainer, { backgroundColor: item.bgColor }]}>
-                                    <Text style={styles.foodEmoji}>{item.image}</Text>
+                                    <Image source={{ uri: item.image }} style={styles.foodImage} />
                                     <View style={styles.ratingBadge}>
                                         <Star size={12} fill="#FFD700" color="#FFD700" />
                                         <Text style={styles.ratingText}>{item.rating}</Text>
@@ -279,8 +364,10 @@ const styles = StyleSheet.create({
         fontFamily: theme.fonts.bold,
         fontSize: 12,
     },
-    promoEmoji: {
-        fontSize: 80,
+    promoImage: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
     },
     searchContainer: {
         flexDirection: 'row',
@@ -347,8 +434,9 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.yellowLight,
         borderColor: theme.colors.primary,
     },
-    categoryIcon: {
-        fontSize: 24,
+    categoryImage: {
+        width: 40,
+        height: 40,
         marginBottom: 8,
     },
     categoryName: {
@@ -382,8 +470,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    foodEmoji: {
-        fontSize: 40,
+    foodImage: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
     },
     ratingBadge: {
         position: 'absolute',
@@ -435,5 +525,70 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         justifyContent: 'center',
         alignItems: 'center',
-    }
+    },
+    restaurantList: {
+        paddingLeft: theme.spacing.lg,
+        marginBottom: theme.spacing.xl,
+    },
+    restaurantCard: {
+        width: 200,
+        backgroundColor: '#FFFFFF',
+        borderRadius: theme.borderRadius.lg,
+        marginRight: 16,
+        padding: 5, // Small padding for inner content
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+    },
+    restaurantImage: {
+        width: '100%',
+        height: 120,
+        borderRadius: theme.borderRadius.lg,
+    },
+    restaurantInfo: {
+        padding: 10,
+    },
+    restaurantName: {
+        fontFamily: theme.fonts.bold,
+        fontSize: 16,
+        color: theme.colors.text,
+        marginBottom: 4,
+    },
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 4,
+        gap: 4,
+    },
+    restaurantAddress: {
+        fontFamily: theme.fonts.regular,
+        fontSize: 12,
+        color: theme.colors.textSecondary,
+        flex: 1,
+    },
+    distanceBadge: {
+        backgroundColor: '#E3F2FD',
+        color: '#2196F3',
+        fontSize: 10,
+        fontFamily: theme.fonts.medium,
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 4,
+    },
+    ratingBadgeSm: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 2,
+        backgroundColor: '#FFFDE7',
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 4,
+    },
+    ratingTextSm: {
+        fontSize: 10,
+        fontFamily: theme.fonts.bold,
+        color: theme.colors.text,
+    },
 });

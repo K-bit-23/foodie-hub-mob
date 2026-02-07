@@ -20,9 +20,11 @@ export default function WelcomeScreen({ navigation }) {
                     style={styles.imageContainer}
                 >
                     {/* We'll use a placeholder or image prompt if needed, but for now a styled view */}
-                    <View style={styles.imagePlaceholder}>
-                        <Text style={styles.emoji}>🍔</Text>
-                    </View>
+                    <Image
+                        source={{ uri: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=800&auto=format&fit=crop' }}
+                        style={styles.welcomeImage}
+                        resizeMode="cover"
+                    />
                 </Animated.View>
 
                 <View style={styles.textContainer}>
@@ -98,21 +100,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    imagePlaceholder: {
+    welcomeImage: {
         width: '100%',
         height: '100%',
-        backgroundColor: theme.colors.primary,
-        borderRadius: theme.borderRadius.full,
-        justifyContent: 'center',
-        alignItems: 'center',
-        elevation: 20,
-        shadowColor: theme.colors.primary,
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.5,
-        shadowRadius: 15,
-    },
-    emoji: {
-        fontSize: 100,
+        borderRadius: width * 0.4,
+        borderWidth: 4,
+        borderColor: '#FFF',
     },
     textContainer: {
         alignItems: 'center',
