@@ -6,8 +6,8 @@ import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from '@expo-goog
 import { Outfit_400Regular, Outfit_600SemiBold, Outfit_700Bold, Outfit_800ExtraBold } from '@expo-google-fonts/outfit';
 import { ActivityIndicator, View } from 'react-native';
 import WelcomeScreen from './src/screens/WelcomeScreen';
-import HomeScreen from './src/screens/HomeScreen';
 import FoodDetailsScreen from './src/screens/FoodDetailsScreen';
+import TabNavigator from './src/navigation/TabNavigator';
 import { StatusBar } from 'expo-status-bar';
 
 const Stack = createStackNavigator();
@@ -36,7 +36,7 @@ export default function App() {
       <StatusBar style="dark" />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Home" component={TabNavigator} />
         <Stack.Screen name="FoodDetails" component={FoodDetailsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
