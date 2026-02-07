@@ -7,7 +7,9 @@ import {
     TouchableOpacity,
     ScrollView,
     Dimensions,
-    Image
+    Image,
+    Platform,
+    StatusBar
 } from 'react-native';
 import { theme } from '../theme';
 import { ChevronLeft, Heart, Star, Clock, Flame, Minus, Plus } from 'lucide-react-native';
@@ -149,7 +151,7 @@ const styles = StyleSheet.create({
         height: height * 0.4,
         borderBottomLeftRadius: 50,
         borderBottomRightRadius: 50,
-        paddingTop: 10,
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 10 : 10,
     },
     navBar: {
         flexDirection: 'row',

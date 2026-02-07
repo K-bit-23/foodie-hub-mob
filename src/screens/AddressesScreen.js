@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView, Dimensions, Platform, StatusBar } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { theme } from '../theme';
 import { ChevronLeft, Plus, MapPin } from 'lucide-react-native';
@@ -21,8 +21,23 @@ const ADDRESSES = [
     }
 ];
 
-export default function AddressesScreen({ navigation }) {
+export default function AddressesScreen({ navigation, route }) {
+    const [addresses, setAddresses] = useState(ADDRESSES);
     const [selectedAddress, setSelectedAddress] = useState(ADDRESSES[0]);
+
+    // Check for new address from MapScreen
+    React.useEffect(() => {
+        if (route.params?.newAddress) {
+            const newAddr = {
+                id: addresses.length + 1,
+                label: 'New Address',
+                address: `Lat: ${route.params.newAddress.latitude.toFixed(4)}, Long: ${route.params.newAddress.longitude.toFixed(4)}`, // Ideally reverse geocode this
+                coordinates: route.params.newAddress
+            };
+            setAddresses([...addresses, newAddr]);
+            setSelectedAddress(newAddr);
+        }
+    }, [route.params?.newAddress]);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -58,7 +73,7 @@ export default function AddressesScreen({ navigation }) {
             </View>
 
             <FlatList
-                data={ADDRESSES}
+                data={addresses}
                 keyExtractor={(item) => item.id.toString()}
                 contentContainerStyle={styles.listContent}
                 renderItem={({ item }) => (
@@ -89,6 +104,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFFFFF',
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     },
     header: {
         flexDirection: 'row',

@@ -1,13 +1,33 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Image, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Image, SafeAreaView, Platform, StatusBar } from 'react-native';
 import { theme } from '../theme';
 import { ChevronLeft, Camera } from 'lucide-react-native';
+
+import * as ImagePicker from 'expo-image-picker';
 
 export default function PersonalScreen({ navigation }) {
     const [name, setName] = useState('Karthik');
     const [email, setEmail] = useState('karthik@foodiehub.com');
     const [phone, setPhone] = useState('+91 9876543210');
-    const [address, setAddress] = useState('123, Anna Main Road, Chennai');
+    const [street, setStreet] = useState('123, Anna Main Road');
+    const [city, setCity] = useState('Chennai');
+    const [district, setDistrict] = useState('Chennai');
+    const [pincode, setPincode] = useState('600040');
+    const [image, setImage] = useState('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop');
+
+    const pickImage = async () => {
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setImage(result.assets[0].uri);
+        }
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -23,11 +43,13 @@ export default function PersonalScreen({ navigation }) {
                 {/* Avatar Section */}
                 <View style={styles.avatarSection}>
                     <View style={styles.imageWrapper}>
-                        <Image
-                            source={{ uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop' }}
-                            style={styles.avatar}
-                        />
-                        <TouchableOpacity style={styles.cameraBtn}>
+                        <TouchableOpacity onPress={pickImage}>
+                            <Image
+                                source={{ uri: image }}
+                                style={styles.avatar}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.cameraBtn} onPress={pickImage}>
                             <Camera size={18} color="#FFF" />
                         </TouchableOpacity>
                     </View>
@@ -67,13 +89,45 @@ export default function PersonalScreen({ navigation }) {
                 </View>
 
                 <View style={styles.formGroup}>
-                    <Text style={styles.label}>Default Address</Text>
+                    <Text style={styles.label}>Street Address</Text>
                     <TextInput
-                        style={[styles.input, styles.textArea]}
-                        value={address}
-                        onChangeText={setAddress}
-                        placeholder="Enter your address"
-                        multiline
+                        style={styles.input}
+                        value={street}
+                        onChangeText={setStreet}
+                        placeholder="House No, Street Name"
+                    />
+                </View>
+
+                <View style={styles.row}>
+                    <View style={[styles.formGroup, { flex: 1, marginRight: 8 }]}>
+                        <Text style={styles.label}>City / Town</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={city}
+                            onChangeText={setCity}
+                            placeholder="City"
+                        />
+                    </View>
+                    <View style={[styles.formGroup, { flex: 1, marginLeft: 8 }]}>
+                        <Text style={styles.label}>District</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={district}
+                            onChangeText={setDistrict}
+                            placeholder="District"
+                        />
+                    </View>
+                </View>
+
+                <View style={styles.formGroup}>
+                    <Text style={styles.label}>Pincode</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={pincode}
+                        onChangeText={setPincode}
+                        placeholder="Pincode"
+                        keyboardType="numeric"
+                        maxLength={6}
                     />
                 </View>
 
@@ -92,6 +146,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFFFFF',
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     },
     header: {
         flexDirection: 'row',
@@ -170,6 +225,10 @@ const styles = StyleSheet.create({
         padding: 24,
         borderTopWidth: 1,
         borderTopColor: '#F5F5F5',
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     saveBtn: {
         backgroundColor: theme.colors.primary,

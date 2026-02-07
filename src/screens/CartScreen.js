@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Image, Platform, StatusBar } from 'react-native';
+
 import { theme } from '../theme';
-import { ChevronLeft, Minus, Plus, Trash2, ArrowRight } from 'lucide-react-native';
+import { ChevronLeft, Minus, Plus, Trash2, ArrowRight, CreditCard } from 'lucide-react-native';
 
 const INITIAL_CART = [
     {
@@ -55,7 +56,12 @@ export default function CartScreen({ navigation }) {
                     <ChevronLeft size={24} color={theme.colors.text} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>My Cart</Text>
-                <View style={{ width: 40 }} />
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('Payment', { total: total })}
+                    style={styles.backBtn}
+                >
+                    <CreditCard size={20} color={theme.colors.primary} />
+                </TouchableOpacity>
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
@@ -105,18 +111,7 @@ export default function CartScreen({ navigation }) {
                 </View>
             </ScrollView>
 
-            {/* Checkout Button */}
-            <View style={styles.footer}>
-                <TouchableOpacity
-                    style={styles.checkoutBtn}
-                    onPress={() => navigation.navigate('Payment', { total: total })}
-                >
-                    <Text style={styles.checkoutText}>Proceed to Checkout</Text>
-                    <View style={styles.priceTag}>
-                        <Text style={styles.priceTagText}>${total.toFixed(2)}</Text>
-                    </View>
-                </TouchableOpacity>
-            </View>
+
         </SafeAreaView>
     );
 }
@@ -125,6 +120,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFFFFF',
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     },
     header: {
         flexDirection: 'row',
@@ -250,32 +246,30 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
     },
     checkoutBtn: {
-        backgroundColor: theme.colors.primary,
-        height: 56,
-        borderRadius: 16,
+        backgroundColor: theme.colors.secondary, // Black button for contrast
+        height: 64,
+        borderRadius: 32,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
         paddingHorizontal: 24,
-        shadowColor: theme.colors.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 4,
+        justifyContent: 'space-between',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.2,
+        shadowRadius: 16,
+        elevation: 8,
     },
     checkoutText: {
         fontFamily: theme.fonts.bold,
-        fontSize: 16,
-        color: theme.colors.secondary,
+        fontSize: 18,
+        color: '#FFFFFF',
     },
-    priceTag: {
-        backgroundColor: 'rgba(255,255,255,0.2)',
-        paddingHorizontal: 12,
-        paddingVertical: 4,
-        borderRadius: 8,
-    },
-    priceTagText: {
-        fontFamily: theme.fonts.bold,
-        color: theme.colors.secondary,
+    checkoutIcon: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: '#FFFFFF',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });

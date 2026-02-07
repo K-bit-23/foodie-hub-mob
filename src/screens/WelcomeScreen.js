@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, SafeAreaView, Platform, StatusBar } from 'react-native';
 import { theme } from '../theme';
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 
 const { width, height } = Dimensions.get('window');
@@ -9,7 +9,7 @@ const { width, height } = Dimensions.get('window');
 export default function WelcomeScreen({ navigation }) {
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBar style="light" />
+            <ExpoStatusBar style="light" />
             <View style={styles.content}>
                 {/* Background Decorative Circles */}
                 <View style={styles.circle1} />
@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.colors.secondary,
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     },
     content: {
         flex: 1,

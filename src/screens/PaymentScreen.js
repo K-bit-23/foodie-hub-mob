@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, Platform, StatusBar, ActivityIndicator } from 'react-native';
 import { theme } from '../theme';
-import { ChevronLeft, CreditCard, Banknote, Smartphone, CheckCircle, Circle } from 'lucide-react-native';
+import { ChevronLeft, CreditCard, Banknote, Smartphone, CheckCircle, Circle, ArrowRight } from 'lucide-react-native';
 
 const PAYMENT_METHODS = [
     {
@@ -28,15 +28,20 @@ export default function PaymentScreen({ navigation, route }) {
     const { total } = route.params || { total: 0 };
     const [selectedMethod, setSelectedMethod] = useState('card');
 
+    const [isProcessing, setIsProcessing] = useState(false);
+
     const handlePayment = () => {
+        setIsProcessing(true);
         // Simulate payment processing
         setTimeout(() => {
+            setIsProcessing(false);
             navigation.replace('OrderSuccess');
-        }, 1500);
+        }, 2000);
     };
 
     return (
         <SafeAreaView style={styles.container}>
+            {/* ... (rest of header and content) ... */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
                     <ChevronLeft size={24} color={theme.colors.text} />
@@ -45,7 +50,7 @@ export default function PaymentScreen({ navigation, route }) {
             </View>
 
             <ScrollView contentContainerStyle={styles.content}>
-
+                {/* ... (rest of content) ... */}
                 {/* Total Amount Card */}
                 <View style={styles.amountCard}>
                     <Text style={styles.amountLabel}>Total to Pay</Text>
@@ -86,12 +91,25 @@ export default function PaymentScreen({ navigation, route }) {
                         </TouchableOpacity>
                     ))}
                 </View>
-
             </ScrollView>
 
             <View style={styles.footer}>
-                <TouchableOpacity style={styles.payBtn} onPress={handlePayment}>
-                    <Text style={styles.payBtnText}>Pay Now</Text>
+                <TouchableOpacity
+                    style={[styles.payBtn, isProcessing && styles.payBtnDisabled]}
+                    onPress={handlePayment}
+                    disabled={isProcessing}
+                    activeOpacity={0.8}
+                >
+                    {isProcessing ? (
+                        <ActivityIndicator color="#FFFFFF" />
+                    ) : (
+                        <>
+                            <Text style={styles.payBtnText}>Pay ${parseFloat(total).toFixed(2)}</Text>
+                            <View style={styles.payBtnIcon}>
+                                <ArrowRight size={20} color={theme.colors.primary} />
+                            </View>
+                        </>
+                    )}
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -99,9 +117,11 @@ export default function PaymentScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
+    // ... (existing styles) ...
     container: {
         flex: 1,
         backgroundColor: '#FFFFFF',
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     },
     header: {
         flexDirection: 'row',
@@ -128,25 +148,27 @@ const styles = StyleSheet.create({
     amountCard: {
         backgroundColor: theme.colors.secondary, // Black card
         borderRadius: 20,
-        padding: 24,
+        padding: 32,
         alignItems: 'center',
         marginBottom: 32,
         shadowColor: theme.colors.secondary,
-        shadowOffset: { width: 0, height: 8 },
+        shadowOffset: { width: 0, height: 10 },
         shadowOpacity: 0.3,
-        shadowRadius: 16,
-        elevation: 8,
+        shadowRadius: 20,
+        elevation: 10,
     },
     amountLabel: {
         fontFamily: theme.fonts.medium,
         color: '#AAAAAA',
         fontSize: 14,
         marginBottom: 8,
+        textTransform: 'uppercase',
+        letterSpacing: 1,
     },
     amountValue: {
         fontFamily: theme.fonts.extraBold,
         color: '#FFFFFF', // White text
-        fontSize: 36,
+        fontSize: 42,
     },
     sectionTitle: {
         fontFamily: theme.fonts.bold,
@@ -200,22 +222,37 @@ const styles = StyleSheet.create({
         padding: 24,
         borderTopWidth: 1,
         borderTopColor: '#F5F5F5',
+        backgroundColor: '#FFFFFF',
     },
     payBtn: {
-        backgroundColor: theme.colors.primary,
-        height: 56,
-        borderRadius: 16,
-        justifyContent: 'center',
+        backgroundColor: theme.colors.secondary, // Black button for contrast
+        height: 64,
+        borderRadius: 32, // Pill shape
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        shadowColor: theme.colors.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 4,
+        paddingHorizontal: 24,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.2,
+        shadowRadius: 16,
+        elevation: 8,
+    },
+    payBtnDisabled: {
+        opacity: 0.7,
+        justifyContent: 'center',
     },
     payBtnText: {
         fontFamily: theme.fonts.bold,
         fontSize: 18,
-        color: theme.colors.secondary,
+        color: '#FFFFFF',
+    },
+    payBtnIcon: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: '#FFFFFF',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });

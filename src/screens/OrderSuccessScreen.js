@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Animated, Easing } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Animated, Easing, Platform, StatusBar } from 'react-native';
 import { theme } from '../theme';
 import { Check, Home } from 'lucide-react-native';
 
@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#FFFFFF',
         justifyContent: 'space-between',
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     },
     centerContent: {
         flex: 1,

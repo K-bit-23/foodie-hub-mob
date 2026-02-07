@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, Dimensions, TouchableOpacity, Platform, StatusBar } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { theme } from '../theme';
@@ -54,7 +54,14 @@ export default function MapScreen({ navigation }) {
                 <View style={styles.footerPanel}>
                     <Text style={styles.title}>Confirm Location</Text>
                     <Text style={styles.subtitle}>Tap on the map to select your delivery location.</Text>
-                    <TouchableOpacity style={styles.confirmBtn} onPress={() => navigation.goBack()}>
+                    <TouchableOpacity
+                        style={styles.confirmBtn}
+                        onPress={() => {
+                            if (selectedCoords) {
+                                navigation.navigate('Addresses', { newAddress: selectedCoords });
+                            }
+                        }}
+                    >
                         <Text style={styles.confirmText}>Confirm Location</Text>
                     </TouchableOpacity>
                 </View>
@@ -80,7 +87,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     backBtn: {
-        margin: 20,
+        marginTop: Platform.OS === 'android' ? StatusBar.currentHeight + 20 : 20,
+        marginLeft: 20,
+        marginRight: 20,
+        marginBottom: 20,
         width: 40,
         height: 40,
         backgroundColor: '#FFFFFF',
