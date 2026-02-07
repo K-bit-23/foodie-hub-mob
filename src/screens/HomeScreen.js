@@ -10,7 +10,9 @@ import {
     SafeAreaView,
     FlatList,
     Dimensions,
-    ActivityIndicator
+    ActivityIndicator,
+    Platform,
+    StatusBar
 } from 'react-native';
 import * as Location from 'expo-location';
 import { theme } from '../theme';
@@ -271,6 +273,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.colors.background,
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     },
     scrollContent: {
         paddingBottom: theme.spacing.xxl,
