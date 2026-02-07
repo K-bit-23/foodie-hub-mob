@@ -10,6 +10,9 @@ import FoodDetailsScreen from './src/screens/FoodDetailsScreen';
 import PersonalScreen from './src/screens/PersonalScreen';
 import AddressesScreen from './src/screens/AddressesScreen';
 import MapScreen from './src/screens/MapScreen';
+import CartScreen from './src/screens/CartScreen';
+import PaymentScreen from './src/screens/PaymentScreen';
+import OrderSuccessScreen from './src/screens/OrderSuccessScreen';
 import TabNavigator from './src/navigation/TabNavigator';
 import { StatusBar } from 'expo-status-bar';
 
@@ -44,6 +47,9 @@ export default function App() {
         <Stack.Screen name="Personal" component={PersonalScreen} />
         <Stack.Screen name="Addresses" component={AddressesScreen} />
         <Stack.Screen name="Map" component={MapScreen} />
+        <Stack.Screen name="Cart" component={CartScreen} />
+        <Stack.Screen name="Payment" component={PaymentScreen} />
+        <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} options={{ gestureEnabled: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

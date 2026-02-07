@@ -128,13 +128,12 @@ export default function FoodDetailsScreen({ route, navigation }) {
                     </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity style={styles.cartBtn}>
-                    <Text style={styles.cartBtnText}>Add to Cart</Text>
-                    <View style={styles.priceBadge}>
-                        <Text style={styles.priceText}>
-                            ${(parseFloat(item.price.replace('$', '')) * quantity).toFixed(2)}
-                        </Text>
-                    </View>
+                <TouchableOpacity
+                    style={styles.addToCartBtn}
+                    onPress={() => navigation.navigate('Cart')}
+                >
+                    <Text style={styles.addToCartText}>Add to Cart</Text>
+                    <Text style={styles.price}>${(item.price ? parseFloat(item.price.replace('$', '')) : 12.00).toFixed(2)}</Text>
                 </TouchableOpacity>
             </Animated.View>
         </SafeAreaView>
@@ -305,32 +304,29 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         color: theme.colors.text,
     },
-    cartBtn: {
+    addToCartBtn: {
         flex: 1,
-        height: 60,
         backgroundColor: theme.colors.primary,
         borderRadius: 20,
+        height: 56,
         flexDirection: 'row',
-        justifyContent: 'center',
         alignItems: 'center',
+        justifyContent: 'space-between',
         paddingHorizontal: 20,
+        marginLeft: 16,
     },
-    cartBtnText: {
-        fontSize: 18,
+    addToCartText: {
         fontFamily: theme.fonts.bold,
+        fontSize: 16,
         color: theme.colors.secondary,
-        flex: 1,
-        textAlign: 'center',
     },
-    priceBadge: {
-        backgroundColor: 'rgba(0,0,0,0.1)',
+    price: {
+        fontFamily: theme.fonts.extraBold,
+        fontSize: 18,
+        color: theme.colors.secondary,
+        backgroundColor: 'rgba(255,255,255,0.2)',
         paddingHorizontal: 12,
         paddingVertical: 6,
-        borderRadius: 10,
+        borderRadius: 12,
     },
-    priceText: {
-        fontSize: 16,
-        fontFamily: theme.fonts.extraBold,
-        color: theme.colors.secondary,
-    }
 });
