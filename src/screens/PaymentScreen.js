@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, Platform, StatusBar, ActivityIndicator } from 'react-native';
 import { theme } from '../theme';
-import { ChevronLeft, CreditCard, Banknote, Smartphone, CheckCircle, Circle, ArrowRight } from 'lucide-react-native';
+import { ChevronLeft, CreditCard, Banknote, Smartphone, CheckCircle, Circle, ArrowRight, QrCode } from 'lucide-react-native';
 
 const PAYMENT_METHODS = [
     {
@@ -15,6 +15,12 @@ const PAYMENT_METHODS = [
         label: 'UPI / Google Pay',
         icon: Smartphone,
         description: 'Instant payment via UPI apps',
+    },
+    {
+        id: 'qr',
+        label: 'Scan QR Code',
+        icon: QrCode,
+        description: 'Scan to pay via any UPI app',
     },
     {
         id: 'cod',
@@ -65,28 +71,41 @@ export default function PaymentScreen({ navigation, route }) {
                             key={method.id}
                             style={[
                                 styles.methodCard,
-                                selectedMethod === method.id && styles.selectedMethodCard
+                                selectedMethod === method.id && styles.selectedMethodCard,
+                                selectedMethod === method.id && method.id === 'qr' && { flexDirection: 'column', alignItems: 'flex-start' }
                             ]}
                             onPress={() => setSelectedMethod(method.id)}
                             activeOpacity={0.9}
                         >
-                            <View style={[
-                                styles.iconBox,
-                                selectedMethod === method.id ? styles.selectedIconBox : {}
-                            ]}>
-                                <method.icon
-                                    size={24}
-                                    color={selectedMethod === method.id ? '#FFF' : theme.colors.primary}
-                                />
+                            <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
+                                <View style={[
+                                    styles.iconBox,
+                                    selectedMethod === method.id ? styles.selectedIconBox : {}
+                                ]}>
+                                    <method.icon
+                                        size={24}
+                                        color={selectedMethod === method.id ? '#FFF' : theme.colors.primary}
+                                    />
+                                </View>
+                                <View style={styles.methodInfo}>
+                                    <Text style={styles.methodLabel}>{method.label}</Text>
+                                    <Text style={styles.methodDesc}>{method.description}</Text>
+                                </View>
+                                {selectedMethod === method.id ? (
+                                    <CheckCircle size={24} color={theme.colors.primary} fill="#E3F2FD" />
+                                ) : (
+                                    <Circle size={24} color="#EEEEEE" />
+                                )}
                             </View>
-                            <View style={styles.methodInfo}>
-                                <Text style={styles.methodLabel}>{method.label}</Text>
-                                <Text style={styles.methodDesc}>{method.description}</Text>
-                            </View>
-                            {selectedMethod === method.id ? (
-                                <CheckCircle size={24} color={theme.colors.primary} fill="#E3F2FD" />
-                            ) : (
-                                <Circle size={24} color="#EEEEEE" />
+
+                            {selectedMethod === 'qr' && method.id === 'qr' && (
+                                <View style={styles.qrContainer}>
+                                    <Image
+                                        source={{ uri: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=foodiehub@upi&pn=FoodieHub&am=100.00' }}
+                                        style={styles.qrImage}
+                                    />
+                                    <Text style={styles.qrText}>Scan to Pay</Text>
+                                </View>
                             )}
                         </TouchableOpacity>
                     ))}
@@ -254,5 +273,24 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    qrContainer: {
+        width: '100%',
+        alignItems: 'center',
+        marginTop: 16,
+        paddingTop: 16,
+        borderTopWidth: 1,
+        borderTopColor: '#EEEEEE',
+    },
+    qrImage: {
+        width: 150,
+        height: 150,
+        borderRadius: 12,
+        marginBottom: 8,
+    },
+    qrText: {
+        fontFamily: theme.fonts.bold,
+        color: theme.colors.text,
+        fontSize: 14,
     },
 });
